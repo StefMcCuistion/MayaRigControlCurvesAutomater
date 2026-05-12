@@ -20,17 +20,19 @@ class Window(QtWidgets.QDialog):
         self.setWindowTitle("Control Curves Automater")
         self.resize(300, 400)
 
-        self.import_shape_library()
+        self.import_settings()
         self._mk_main_layout()
 
-    def import_shape_library(self):
-        print("Importing shape library...")
+    def import_settings(self):
+        print("Importing settings...")
         with open(os.path.join(
                                os.path.dirname(__file__),
-                               "shape_library.json"),
+                               "MRCCA_userSettings.json"),
                   "r") as f:
-            self.shape_library = json.load(f)
-        self.shapes = self.shape_library["shapes"]
+            self.user_settings = json.load(f)
+        self.shapes = self.user_settings["shapes"]
+        self.group_suffixes = self.user_settings["group_suffixes"]
+        self.curve_suffixes = self.user_settings["curve_suffixes"]
         self.shape_row_len = 3
         self.total_shape_rows = (len(self.shapes)) // self.shape_row_len
         print("Done")
@@ -105,6 +107,8 @@ class Window(QtWidgets.QDialog):
         self.shape_degree = 0
         self.params_layout = QtWidgets.QFormLayout()
         self._mk_axis_ui()
+        self._mk_suffix_ui()
+        self._mk_shape_scale_ui()
         self.layout.addLayout(self.params_layout)
 
     def _mk_axis_ui(self):
@@ -116,6 +120,36 @@ class Window(QtWidgets.QDialog):
         self.axis_layout.addWidget(self.axis_combobox)
         self.params_layout.addRow(self.axis_layout)
 
+    def _mk_suffix_ui(self):
+        # Group Suffixes
+        self.group_suffix_layout = QtWidgets.QHBoxLayout()
+        self.group_suffix_label = QtWidgets.QLabel("Group Suffix:")
+        self.group_suffix_combobox = QtWidgets.QComboBox()
+        self.group_suffix_combobox.addItems(self.group_suffixes)
+        self.group_suffix_layout.addWidget(self.group_suffix_label)
+        self.group_suffix_layout.addWidget(self.group_suffix_combobox)
+        self.params_layout.addRow(self.group_suffix_layout)
+        # Control Curve Suffixes
+        self.curve_suffix_layout = QtWidgets.QHBoxLayout()
+        self.curve_suffix_label = QtWidgets.QLabel("Control Curve Suffix:")
+        self.curve_suffix_combobox = QtWidgets.QComboBox()
+        self.curve_suffix_combobox.addItems(self.curve_suffixes)
+        self.curve_suffix_layout.addWidget(self.curve_suffix_label)
+        self.curve_suffix_layout.addWidget(self.curve_suffix_combobox)
+        self.params_layout.addRow(self.curve_suffix_layout)
+        self.params_layout.addRow(self.group_suffix_layout)
+
+    def _mk_shape_scale_ui(self):
+        self.scale_layout = QtWidgets.QHBoxLayout()
+        self.scale_label = QtWidgets.QLabel("Scale: ")
+        self.scale_spinbox = QtWidgets.QDoubleSpinBox()
+        self.scale_spinbox.setRange(0.01, 10000.0)
+        self.scale_spinbox.setValue(1.0)
+        self.scale_spinbox.setSingleStep(1.0)
+        self.scale_layout.addWidget(self.scale_label)
+        self.scale_layout.addWidget(self.scale_spinbox)
+        self.params_layout.addRow(self.scale_layout)
+
     def _get_row_col(self, shape_idx):
         btn_idx = shape_idx
         row = (btn_idx) // 3
@@ -123,9 +157,10 @@ class Window(QtWidgets.QDialog):
         return row, col
 
     def refresh_shapes(self):
-        self.import_shape_library()
-        self.shapes_layout.deleteLater()
-        self._mk_shapes_layout()
+        self.import_settings()
+        win = Window()
+        win.show()
+        self.close()
 
     def create_shape(self, name):
         selection = cmds.ls(selection=True)
