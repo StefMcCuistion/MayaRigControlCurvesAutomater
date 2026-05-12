@@ -35,9 +35,6 @@ class Window(QtWidgets.QDialog):
         self.curve_suffixes = self.user_settings["curve_suffixes"]
         self.shape_row_len = 2
         self.total_shape_rows = (len(self.shapes)) // self.shape_row_len
-        self.colors = []
-        for color in self.user_settings["colors"]:
-            self.colors.append(color)
         print("Done")
         print(f"shapes = {self.shapes}")
 
@@ -101,8 +98,6 @@ class Window(QtWidgets.QDialog):
     def _mk_refresh_btn(self):
         self.refresh_btn = QtWidgets.QPushButton("Refresh")
         self.refresh_btn.clicked.connect(self.refresh_shapes)
-        self.refresh_btn.setStyleSheet("background-color: cyan, "
-                                       "font-weight: bold;")
         self.refresh_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
                                        QtWidgets.QSizePolicy.Expanding)
         self.shapes_layout.addWidget(self.refresh_btn)
@@ -113,7 +108,6 @@ class Window(QtWidgets.QDialog):
         self._mk_axis_ui()
         self._mk_match_direction_ui()
         self._mk_constraint_options_ui()
-        self._mk_color_ui()
         self._mk_line_thickness_ui()
         self._mk_suffix_ui()
         self._mk_group_name_ui()
@@ -166,37 +160,6 @@ class Window(QtWidgets.QDialog):
         self.scale_layout.addWidget(self.scale_label)
         self.scale_layout.addWidget(self.scale_spinbox)
         self.params_layout.addRow(self.scale_layout)
-
-    def _mk_color_ui(self):
-        # default color
-        default_color_layout = QtWidgets.QHBoxLayout()
-        default_color_label = QtWidgets.QLabel("Default Color")
-        default_color_layout.addWidget(default_color_label)
-        self.default_color_combobox = QtWidgets.QComboBox()
-        self.default_color_combobox.addItems(self.colors)
-        self.default_color_combobox.setCurrentText(self.colors[0])
-        default_color_layout.addWidget(self.default_color_combobox)
-        self.params_layout.addRow(default_color_layout)
-        # right side color
-        right_color_layout = QtWidgets.QHBoxLayout()
-        right_color_label = QtWidgets.QLabel("Right Side Color")
-        right_color_layout.addWidget(right_color_label)
-        self.right_color_combobox = QtWidgets.QComboBox()
-        self.right_color_combobox.addItems(self.colors)
-        self.right_color_combobox.setCurrentText(self.colors[1])
-        right_color_layout.addWidget(self.right_color_combobox)
-        self.params_layout.addRow(right_color_layout)
-        # left side color color
-        left_color_layout = QtWidgets.QHBoxLayout()
-        left_color_label = QtWidgets.QLabel("Left Side Color")
-        left_color_layout.addWidget(left_color_label)
-        self.left_color_combobox = QtWidgets.QComboBox()
-        self.left_color_combobox.addItems(self.colors)
-        self.left_color_combobox.setCurrentText(self.colors[2])
-        left_color_layout.addWidget(self.left_color_combobox)
-        self.params_layout.addRow(left_color_layout)
-
-
 
     def _mk_line_thickness_ui(self):
         line_thickness_layout = QtWidgets.QHBoxLayout()
