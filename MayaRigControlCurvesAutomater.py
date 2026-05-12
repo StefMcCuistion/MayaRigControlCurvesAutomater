@@ -90,7 +90,6 @@ class Window(QtWidgets.QDialog):
     def create_shape(self, name):
         name = self.sender().text()
         shape_data = {}
-        print(f"Button creating shape: {name}")
         for shape in self.shapes:
             if shape["Name"] == name:
                 shape_data["Name"] = shape["Name"]
@@ -109,4 +108,4 @@ class Control_Curve():
         self.shape_name = shape_data["Name"]
 
     def create(self):
-        print(f"Class creating shape: {self.shape_name}")
+        print(f"Creating: {self.shape_name}")
