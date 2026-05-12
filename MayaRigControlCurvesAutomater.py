@@ -25,7 +25,6 @@ class Window(QtWidgets.QDialog):
 
     def import_shape_library(self):
         print("Importing shape library...")
-        # import shape library from json file
         with open(os.path.join(
                                os.path.dirname(__file__),
                                "shape_library.json"),
