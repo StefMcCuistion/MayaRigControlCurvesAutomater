@@ -264,8 +264,7 @@ class ControlCurve():
         return controls_grp
 
     def _parent(self):
-        print(f"parent = {self.parent}")
         cmds.parent(self.grp, self.parent)
 
     def _create_joint_constraint(self):
-        pass
+        cmds.parentConstraint(self.curve_obj, self.selected_obj, mo=True)
