@@ -42,10 +42,10 @@ class Window(QtWidgets.QDialog):
 
     def _mk_ui(self):
         self._mk_header()
-        self._mk_h_divider()
+        self._mk_h_divider(self.layout)
         self._mk_shapes_ui()
-        self._mk_splitter()
-        self._mk_h_divider()
+        self._mk_h_splitter(self.layout)
+        self._mk_h_divider(self.layout)
         self._mk_params_ui()
         self.layout.addStretch()
         # self._mk_warning_label("")
@@ -58,19 +58,26 @@ class Window(QtWidgets.QDialog):
         self._header_label.setAlignment(QtCore.Qt.AlignCenter)
         self.layout.addWidget(self._header_label)
 
-    def _mk_h_divider(self):
+    def _mk_h_divider(self, layout):
         line = QtWidgets.QFrame()
         line.setFrameShape(QtWidgets.QFrame.HLine)
         line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.layout.addWidget(line)
+        layout.addWidget(line)
 
-    def _mk_splitter(self):
+    def _mk_v_divider(self, layout):
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.VLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        layout.addWidget(line)
+
+    def _mk_h_splitter(self, layout):
         self.splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
-        self.layout.addWidget(self.splitter)
+        layout.addWidget(self.splitter)
 
     def _mk_shapes_ui(self):
         self.shapes_layout = QtWidgets.QHBoxLayout()
         self._mk_refresh_btn()
+        # self._mk_v_divider(self.shapes_layout)
         self._mk_shape_btns()
         self.layout.insertLayout(2, self.shapes_layout)
 
