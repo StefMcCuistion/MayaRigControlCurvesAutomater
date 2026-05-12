@@ -38,17 +38,16 @@ class Window(QtWidgets.QDialog):
 
     def _mk_main_layout(self):
         self.layout = QtWidgets.QVBoxLayout(self)
-        self._mk_ui()
-
-    def _mk_ui(self):
-        self._mk_header()
-        self._mk_h_divider(self.layout)
-        self._mk_shapes_ui()
-        self._mk_h_splitter(self.layout)
-        self._mk_h_divider(self.layout)
-        self._mk_params_ui()
+        self._mk_main_layout_ui()
         self.layout.addStretch()
 
+    def _mk_main_layout_ui(self):
+        self._mk_header()
+        self._mk_h_divider(self.layout)
+        self._mk_shapes_layout()
+        self._mk_h_splitter(self.layout)
+        self._mk_h_divider(self.layout)
+        self._mk_params_layout()
 
     def _mk_header(self):
         self._header_label = QtWidgets.QLabel("MR Control Curves Automater",
@@ -74,7 +73,7 @@ class Window(QtWidgets.QDialog):
         self.splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
         layout.addWidget(self.splitter)
 
-    def _mk_shapes_ui(self):
+    def _mk_shapes_layout(self):
         self.shapes_layout = QtWidgets.QHBoxLayout()
         self._mk_refresh_btn()
         # self._mk_v_divider(self.shapes_layout)
@@ -102,9 +101,20 @@ class Window(QtWidgets.QDialog):
                                        QtWidgets.QSizePolicy.Expanding)
         self.shapes_layout.addWidget(self.refresh_btn)
 
-    def _mk_params_ui(self):
+    def _mk_params_layout(self):
         self.shape_degree = 0
         self.params_layout = QtWidgets.QFormLayout()
+        self._mk_axis_ui()
+        self.layout.addLayout(self.params_layout)
+
+    def _mk_axis_ui(self):
+        self.axis_layout = QtWidgets.QHBoxLayout()
+        self.axis_label = QtWidgets.QLabel("Axis:")
+        self.axis_combobox = QtWidgets.QComboBox()
+        self.axis_combobox.addItems(["X", "Y", "Z"])
+        self.axis_layout.addWidget(self.axis_label)
+        self.axis_layout.addWidget(self.axis_combobox)
+        self.params_layout.addRow(self.axis_layout)
 
     def _get_row_col(self, shape_idx):
         btn_idx = shape_idx
@@ -115,7 +125,7 @@ class Window(QtWidgets.QDialog):
     def refresh_shapes(self):
         self.import_shape_library()
         self.shapes_layout.deleteLater()
-        self._mk_shapes_ui()
+        self._mk_shapes_layout()
 
     def create_shape(self, name):
         selection = cmds.ls(selection=True)
@@ -129,13 +139,13 @@ class Window(QtWidgets.QDialog):
                 shape_data["Name"] = shape["Name"]
                 shape_data["Points"] = shape["Points"]
                 break
-        shape_data["Degree"] = self.shape_degree
+        shape_data["Axis"] = self.axis_combobox.currentText()
         print(f"shape_data = {shape_data}")
-        new_shape = Control_Curve(shape_data)
+        new_shape = ControlCurve(shape_data)
 
 
-class Control_Curve():
+class ControlCurve():
     def __init__(self, shape_data):
-        self.degree = shape_data["Degree"]
+        self.degree = shape_data["Axis"]
         self.points = shape_data["Points"]
         self.shape_name = shape_data["Name"]
