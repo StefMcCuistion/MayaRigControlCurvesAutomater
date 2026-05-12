@@ -158,8 +158,8 @@ class Window(QtWidgets.QDialog):
         self.scale_label = QtWidgets.QLabel("Scale: ")
         self.scale_spinbox = QtWidgets.QDoubleSpinBox()
         self.scale_spinbox.setRange(0.01, 10000.0)
-        self.scale_spinbox.setSingleStep(1.0)
-        self.scale_spinbox.setValue(30.0)
+        self.scale_spinbox.setSingleStep(5.0)
+        self.scale_spinbox.setValue(15.0)
         self.scale_layout.addWidget(self.scale_label)
         self.scale_layout.addWidget(self.scale_spinbox)
         self.params_layout.addRow(self.scale_layout)
@@ -211,6 +211,7 @@ class Window(QtWidgets.QDialog):
         shape_data["Group Suffix"] = self.group_suffix_combobox.currentText()
         shape_data["Curve Suffix"] = self.curve_suffix_combobox.currentText()
         shape_data["Scale"] = self.scale_spinbox.value()
+        shape_data["Thick Lines"] = self.thick_lines_checkbox.isChecked()
         print(f"shape_data = {shape_data}")
         control_curve = ControlCurve(selection, shape_data)
         control_curve._build()
@@ -227,6 +228,7 @@ class ControlCurve():
         self.match_direction = shape_data["Match Direction"]
         self.points = shape_data["Points"]
         self.scale = shape_data["Scale"]
+        self.thick_lines = shape_data["Thick Lines"]
 
     def _build(self):
         self.parent = self._get_controls_grp()
@@ -240,6 +242,7 @@ class ControlCurve():
             self.curve_obj = self._create_curve()
             self._fix_scale()
             self._fix_axis()
+            self._fix_thickness()
             self._create_grp()
             self._fix_position_and_orient()
             self._parent()
@@ -268,6 +271,11 @@ class ControlCurve():
         elif self.axis == "Z":
             cmds.rotate(90, 0, 0, self.curve_obj, a=True)
         cmds.FreezeTransformations(self.curve_obj)
+
+    def _fix_thickness(self):
+        if self.thick_lines:
+            for s in cmds.listRelatives(self.curve_obj, s=True):
+                cmds.setAttr(s + ".lineWidth", 4)
 
     def _fix_position_and_orient(self):
         constraint = cmds.parentConstraint(self.selected_obj,
