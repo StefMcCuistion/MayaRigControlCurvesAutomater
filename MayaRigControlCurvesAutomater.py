@@ -86,5 +86,14 @@ class Window(QtWidgets.QDialog):
         return row, col
 
     def _create_shape(self):
-        name = "(default_shape_name)"
-        print(f"Creating {name} shape")
+        print(f"Creating shape")
+        shape = Shape()
+        shape.create()
+
+  
+class Shape():
+    def __init__(self):
+        pass
+
+    def create(self):
+        print("create shape")
