@@ -35,6 +35,9 @@ class Window(QtWidgets.QDialog):
         self.curve_suffixes = self.user_settings["curve_suffixes"]
         self.shape_row_len = 2
         self.total_shape_rows = (len(self.shapes)) // self.shape_row_len
+        self.colors = []
+        for color in self.user_settings["colors"]:
+            self.colors.append(color)
         print("Done")
         print(f"shapes = {self.shapes}")
 
@@ -50,7 +53,7 @@ class Window(QtWidgets.QDialog):
         self._mk_h_divider(self.layout)
         self._mk_params_layout()
         self.layout.addStretch()
-        self._mk_delete_all_btn()
+        self._mk_delete_controls_grp_btn()
 
     def _mk_header(self):
         self._header_label = QtWidgets.QLabel("MR Control Curves Automater",
@@ -155,7 +158,7 @@ class Window(QtWidgets.QDialog):
 
     def _mk_shape_scale_ui(self):
         self.scale_layout = QtWidgets.QHBoxLayout()
-        self.scale_label = QtWidgets.QLabel("Scale: ")
+        self.scale_label = QtWidgets.QLabel("Scale")
         self.scale_spinbox = QtWidgets.QDoubleSpinBox()
         self.scale_spinbox.setRange(0.01, 10000.0)
         self.scale_spinbox.setSingleStep(5.0)
@@ -165,7 +168,35 @@ class Window(QtWidgets.QDialog):
         self.params_layout.addRow(self.scale_layout)
 
     def _mk_color_ui(self):
-        pass
+        # default color
+        default_color_layout = QtWidgets.QHBoxLayout()
+        default_color_label = QtWidgets.QLabel("Default Color")
+        default_color_layout.addWidget(default_color_label)
+        self.default_color_combobox = QtWidgets.QComboBox()
+        self.default_color_combobox.addItems(self.colors)
+        self.default_color_combobox.setCurrentText(self.colors[0])
+        default_color_layout.addWidget(self.default_color_combobox)
+        self.params_layout.addRow(default_color_layout)
+        # right side color
+        right_color_layout = QtWidgets.QHBoxLayout()
+        right_color_label = QtWidgets.QLabel("Right Side Color")
+        right_color_layout.addWidget(right_color_label)
+        self.right_color_combobox = QtWidgets.QComboBox()
+        self.right_color_combobox.addItems(self.colors)
+        self.right_color_combobox.setCurrentText(self.colors[1])
+        right_color_layout.addWidget(self.right_color_combobox)
+        self.params_layout.addRow(right_color_layout)
+        # left side color color
+        left_color_layout = QtWidgets.QHBoxLayout()
+        left_color_label = QtWidgets.QLabel("Left Side Color")
+        left_color_layout.addWidget(left_color_label)
+        self.left_color_combobox = QtWidgets.QComboBox()
+        self.left_color_combobox.addItems(self.colors)
+        self.left_color_combobox.setCurrentText(self.colors[2])
+        left_color_layout.addWidget(self.left_color_combobox)
+        self.params_layout.addRow(left_color_layout)
+
+
 
     def _mk_line_thickness_ui(self):
         line_thickness_layout = QtWidgets.QHBoxLayout()
@@ -201,7 +232,7 @@ class Window(QtWidgets.QDialog):
         # master grp
         master_grp_name_layout = QtWidgets.QHBoxLayout()
         master_grp_name_label = QtWidgets.QLabel(
-            "Master Group Name: ")
+            "Master Group Name")
         master_grp_name_layout.addWidget(master_grp_name_label)
         self.master_grp_name_lineedit = QtWidgets.QLineEdit()
         self.master_grp_name_lineedit.setText("master")
@@ -213,7 +244,7 @@ class Window(QtWidgets.QDialog):
         # controls grp
         controls_grp_name_layout = QtWidgets.QHBoxLayout()
         controls_grp_name_label = QtWidgets.QLabel(
-            "Controls Group Name: ")
+            "Controls Group Name")
         controls_grp_name_layout.addWidget(controls_grp_name_label)
         self.controls_grp_name_lineedit = QtWidgets.QLineEdit()
         self.controls_grp_name_lineedit.setText("controls")
@@ -223,8 +254,14 @@ class Window(QtWidgets.QDialog):
         controls_grp_name_layout.addWidget(self.controls_grp_name_lineedit)
         self.params_layout.addRow(controls_grp_name_layout)
 
-    def _mk_delete_all_btn(self):
-        pass
+    def _mk_delete_controls_grp_btn(self):
+        self.delete_all_btn = QtWidgets.QPushButton("Delete Controls Group")
+        self.delete_all_btn.clicked.connect(self._delete_controls_grp)
+        self.layout.addWidget(self.delete_all_btn)
+
+    def _delete_controls_grp(self):
+        controls_grp_name = self.controls_grp_name_lineedit.text()
+        cmds.delete(controls_grp_name)
 
     def _get_row_col(self, shape_idx):
         btn_idx = shape_idx
