@@ -1,0 +1,9 @@
+import MayaRigControlCurvesAutomater.MayaRigControlCurvesAutomater as MRCCA
+import ZF_Quick_Curves_V2 as QuickCurves
+import importlib
+
+
+# RUN MY TOOL
+importlib.reload(MRCCA)
+win = MRCCA.Window()
+win.show()

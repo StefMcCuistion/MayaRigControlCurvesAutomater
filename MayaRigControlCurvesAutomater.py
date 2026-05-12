@@ -15,4 +15,4 @@ class Window(QtWidgets.QDialog):
     def __init__(self):
         super().__init__(parent=get_maya_main_win())
         self.setWindowTitle("Control Curves Automater")
-        self.resize(500, 200)
+        self.resize(300, 400)
