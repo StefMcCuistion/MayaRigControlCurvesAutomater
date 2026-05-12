@@ -33,7 +33,11 @@ class Window(QtWidgets.QDialog):
 
     def _mk_ui(self):
         self._mk_header()
+        self._mk_h_divider()
         self._mk_shapes_ui()
+        self._mk_h_divider()
+        self._mk_params_ui()
+        self.layout.addStretch()
 
     def _mk_header(self):
         self._header_label = QtWidgets.QLabel("MR Control Curves Automater",
@@ -42,6 +46,12 @@ class Window(QtWidgets.QDialog):
                                          "font-weight: bold;")
         self._header_label.setAlignment(QtCore.Qt.AlignCenter)
         self.layout.addWidget(self._header_label)
+
+    def _mk_h_divider(self):
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.layout.addWidget(line)
 
     def _mk_shapes_ui(self):
         self.shapes_layout = QtWidgets.QGridLayout()
@@ -58,10 +68,16 @@ class Window(QtWidgets.QDialog):
             self.shapes_layout.addWidget(btn, pos[0], pos[1])
         self.layout.addLayout(self.shapes_layout)
 
-    def _get_row_col(self, idx):
-        row = (idx + 1) // 3
-        col = (idx + 1) % 3
+    def _mk_params_ui(self):
+        self.params_layout = QtWidgets.QFormLayout()
+
+
+    def _get_row_col(self, shape_idx):
+        btn_idx = shape_idx + 1
+        row = (btn_idx) // 3
+        col = (btn_idx) % 3
         return row, col
 
-    def _create_shape(self, degree, points, name):
+    def _create_shape(self, name):
+        name = "(default_shape_name)"
         print(f"Creating {name} shape")
