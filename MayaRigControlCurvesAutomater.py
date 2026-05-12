@@ -20,7 +20,9 @@ class Window(QtWidgets.QDialog):
 
     def _mk_main_layout(self):
         self._layout = QtWidgets.QVBoxLayout(self)
-        # make UI
+        self._make_ui()
+
+    def _make_ui(self):
         # header label
         self._header_label = QtWidgets.QLabel("MR Control Curves Automater",
                                               self)
