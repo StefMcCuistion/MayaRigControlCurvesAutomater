@@ -207,6 +207,11 @@ class ControlCurve():
     def _build(self):
         for selected_obj in self.selection:
             self.selected_obj = selected_obj
+            self.name_stem = ""
+            for element in selected_obj.split("_")[:-1]:
+                self.name_stem += element
+                self.name_stem += "_"
+            self.name_stem = self.name_stem[:-1]
             self.curve_obj = self._create_curve()
             self._fix_scale()
             self._fix_axis()
@@ -215,12 +220,12 @@ class ControlCurve():
 
     def _create_curve(self):
         if self.points == 0:
-            curve_obj = cmds.circle(n=self.shape_name + self.curve_suffix)
+            curve_obj = cmds.circle(n=self.name_stem + self.curve_suffix)
             cmds.rotate(0, 90, 90, curve_obj)
         else:
             curve_obj = cmds.curve(p=self.points,
                                    d=self.degree,
-                                   n=self.shape_name + self.curve_suffix)
+                                   n=self.name_stem + self.curve_suffix)
         cmds.FreezeTransformations(curve_obj)
         return curve_obj
 
@@ -241,6 +246,6 @@ class ControlCurve():
         cmds.delete(constraint)
 
     def _create_grp(self):
-        self.grp = cmds.group(n=self.shape_name + self.group_suffix,
+        self.grp = cmds.group(n=self.name_stem + self.group_suffix,
                               empty=True)
         cmds.parent(self.curve_obj, self.grp)
