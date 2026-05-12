@@ -107,6 +107,7 @@ class Window(QtWidgets.QDialog):
         self.shape_degree = 0
         self.params_layout = QtWidgets.QFormLayout()
         self._mk_axis_ui()
+        self._mk_match_direction_ui()
         self._mk_suffix_ui()
         self._mk_shape_scale_ui()
         self.layout.addLayout(self.params_layout)
@@ -119,6 +120,13 @@ class Window(QtWidgets.QDialog):
         self.axis_layout.addWidget(self.axis_label)
         self.axis_layout.addWidget(self.axis_combobox)
         self.params_layout.addRow(self.axis_layout)
+        
+    def _mk_match_direction_ui(self):
+        self.match_dir_layout = QtWidgets.QHBoxLayout()
+        self.match_dir_layout.addWidget(QtWidgets.QLabel("Match Joint Orientation:"))
+        self.match_dir_checkbox = QtWidgets.QCheckBox()
+        self.match_dir_layout.addWidget(self.match_dir_checkbox)
+        self.params_layout.addRow(self.match_dir_layout)
 
     def _mk_suffix_ui(self):
         # Group Suffixes
