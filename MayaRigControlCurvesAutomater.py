@@ -188,12 +188,13 @@ class Window(QtWidgets.QDialog):
         shape_data["Curve Suffix"] = self.curve_suffix_combobox.currentText()
         shape_data["Scale"] = self.scale_spinbox.value()
         print(f"shape_data = {shape_data}")
-        control_curve = ControlCurve(shape_data)
+        control_curve = ControlCurve(selection, shape_data)
         control_curve._build()
 
 
 class ControlCurve():
-    def __init__(self, shape_data):
+    def __init__(self, selection, shape_data):
+        self.selection = selection
         self.shape_name = shape_data["Name"]
         self.group_suffix = shape_data["Group Suffix"]
         self.curve_suffix = shape_data["Curve Suffix"]
@@ -204,10 +205,13 @@ class ControlCurve():
         self.scale = shape_data["Scale"]
 
     def _build(self):
-
-        self.curve_obj = self._create_curve()
-        self._fix_scale()
-        self._fix_axis()
+        for selected_obj in self.selection:
+            self.selected_obj = selected_obj
+            self.curve_obj = self._create_curve()
+            self._fix_scale()
+            self._fix_axis()
+            self._create_grp()
+            self._fix_position_and_orient()
 
     def _create_curve(self):
         if self.points == 0:
@@ -230,3 +234,13 @@ class ControlCurve():
         elif self.axis == "Z":
             cmds.rotate(90, 0, 0, self.curve_obj, a=True)
         cmds.FreezeTransformations(self.curve_obj)
+
+    def _fix_position_and_orient(self):
+        pass
+        # constraint = cmds.parentConstraint(self.selected_obj,
+        #                                    self.curve_obj, mo=False)
+
+    def _create_grp(self):
+        self.grp = cmds.group(n=self.shape_name + self.group_suffix,
+                              empty=True)
+        cmds.parent(self.curve_obj, self.grp)
