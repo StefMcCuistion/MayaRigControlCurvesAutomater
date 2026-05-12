@@ -114,7 +114,7 @@ class Window(QtWidgets.QDialog):
 
     def _mk_axis_ui(self):
         self.axis_layout = QtWidgets.QHBoxLayout()
-        self.axis_label = QtWidgets.QLabel("Axis:")
+        self.axis_label = QtWidgets.QLabel("Face Axis:")
         self.axis_combobox = QtWidgets.QComboBox()
         self.axis_combobox.addItems(["X", "Y", "Z"])
         self.axis_layout.addWidget(self.axis_label)
@@ -206,6 +206,7 @@ class ControlCurve():
         self.scale = shape_data["Scale"]
 
     def _build(self):
+        self.parent = self._get_controls_grp()
         for selected_obj in self.selection:
             self.selected_obj = selected_obj
             self.name_stem = ""
@@ -218,6 +219,9 @@ class ControlCurve():
             self._fix_axis()
             self._create_grp()
             self._fix_position_and_orient()
+            self._parent()
+            self._create_joint_constraint()
+            self.parent = self.curve_obj
 
     def _create_curve(self):
         if self.points == 0:
@@ -252,3 +256,16 @@ class ControlCurve():
         self.grp = cmds.group(n=self.name_stem + self.group_suffix,
                               empty=True)
         cmds.parent(self.curve_obj, self.grp)
+
+    def _get_controls_grp(self):
+        controls_grp = cmds.ls("controls")
+        if not controls_grp:
+            controls_grp = cmds.group(n="controls", empty=True)
+        return controls_grp
+
+    def _parent(self):
+        print(f"parent = {self.parent}")
+        cmds.parent(self.grp, self.parent)
+
+    def _create_joint_constraint(self):
+        pass
