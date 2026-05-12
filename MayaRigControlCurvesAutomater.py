@@ -32,7 +32,7 @@ class Window(QtWidgets.QDialog):
             self.shape_library = json.load(f)
         self.shapes = self.shape_library["shapes"]
         self.shape_row_len = 3
-        self.total_shape_rows = (len(self.shapes) + 1) // self.shape_row_len
+        self.total_shape_rows = (len(self.shapes)) // self.shape_row_len
         print("Done")
         print(f"shapes = {self.shapes}")
 
@@ -44,10 +44,11 @@ class Window(QtWidgets.QDialog):
         self._mk_header()
         self._mk_h_divider()
         self._mk_shapes_ui()
+        self._mk_splitter()
         self._mk_h_divider()
         self._mk_params_ui()
         self.layout.addStretch()
-        self._mk_warning_label("")
+        # self._mk_warning_label("")
 
     def _mk_header(self):
         self._header_label = QtWidgets.QLabel("MR Control Curves Automater",
@@ -63,27 +64,43 @@ class Window(QtWidgets.QDialog):
         line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.layout.addWidget(line)
 
+    def _mk_splitter(self):
+        self.splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        self.layout.addWidget(self.splitter)
+
     def _mk_shapes_ui(self):
-        self.shapes_layout = QtWidgets.QGridLayout()
-        self.refresh_btn = QtWidgets.QPushButton("REFRESH")
-        self.refresh_btn.clicked.connect(self.refresh_shapes)
-        self.refresh_btn.setStyleSheet("background-color: cyan, "
-                                       "font-weight: bold;")
-        self.shapes_layout.addWidget(self.refresh_btn, 0, 0)
+        self.shapes_layout = QtWidgets.QHBoxLayout()
+        self._mk_refresh_btn()
+        self._mk_shape_btns()
+        self.layout.insertLayout(2, self.shapes_layout)
+
+    def _mk_shape_btns(self):
+        self.shape_btns_layout = QtWidgets.QGridLayout()
         for shape_idx in range(len(self.shapes)):
             self._current_btn_name = self.shapes[shape_idx]["Name"]
             btn = QtWidgets.QPushButton(self._current_btn_name)
+            btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                              QtWidgets.QSizePolicy.Expanding)
             btn.clicked.connect(self.create_shape)
             pos = self._get_row_col(shape_idx)
-            self.shapes_layout.addWidget(btn, pos[0], pos[1])
-        self.layout.insertLayout(2, self.shapes_layout)
+            self.shape_btns_layout.addWidget(btn, pos[0], pos[1])
+        self.shapes_layout.addLayout(self.shape_btns_layout)
+
+    def _mk_refresh_btn(self):
+        self.refresh_btn = QtWidgets.QPushButton("Refresh")
+        self.refresh_btn.clicked.connect(self.refresh_shapes)
+        self.refresh_btn.setStyleSheet("background-color: cyan, "
+                                       "font-weight: bold;")
+        self.refresh_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
+                                       QtWidgets.QSizePolicy.Expanding)
+        self.shapes_layout.addWidget(self.refresh_btn)
 
     def _mk_params_ui(self):
         self.shape_degree = 0
         self.params_layout = QtWidgets.QFormLayout()
 
     def _get_row_col(self, shape_idx):
-        btn_idx = shape_idx + 1
+        btn_idx = shape_idx
         row = (btn_idx) // 3
         col = (btn_idx) % 3
         return row, col
@@ -96,8 +113,8 @@ class Window(QtWidgets.QDialog):
 
     def _warning(self, msg):
         cmds.warning(msg)
-        self.warning_label.setText(msg)
-        self.warning_label.show()
+        # self.warning_label.setText(msg)
+        # self.warning_label.show()
 
     def _mk_warning_label(self, text):
         self.warning_label = QtWidgets.QLabel(text, self)
