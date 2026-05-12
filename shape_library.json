@@ -1,0 +1,9 @@
+{
+    "shapes": [
+        {"Circle": []},
+        {"Square": []},
+        {"Cube": []},
+        {"Star": []}
+        {"Cross": []}
+    ]
+}

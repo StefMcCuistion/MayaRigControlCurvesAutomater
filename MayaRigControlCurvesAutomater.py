@@ -63,14 +63,5 @@ class Window(QtWidgets.QDialog):
         col = (idx + 1) % 3
         return row, col
 
-    def _create_shape(self):
-        print("Create shape")
-
-
-class Shape():
-
-    def __init__(self, name):
-        self.name = name
-
-    def create(self):
-        print(f"Creating {self.name}")
+    def _create_shape(self, degree, points, name):
+        print(f"Creating {name} shape")
