@@ -152,8 +152,8 @@ class Window(QtWidgets.QDialog):
         self.scale_label = QtWidgets.QLabel("Scale: ")
         self.scale_spinbox = QtWidgets.QDoubleSpinBox()
         self.scale_spinbox.setRange(0.01, 10000.0)
-        self.scale_spinbox.setValue(1.0)
         self.scale_spinbox.setSingleStep(1.0)
+        self.scale_spinbox.setValue(30.0)
         self.scale_layout.addWidget(self.scale_label)
         self.scale_layout.addWidget(self.scale_spinbox)
         self.params_layout.addRow(self.scale_layout)
@@ -193,14 +193,20 @@ class Window(QtWidgets.QDialog):
 
 class ControlCurve():
     def __init__(self, shape_data):
-        self.degree = shape_data["Axis"]
-        self.points = shape_data["Points"]
         self.shape_name = shape_data["Name"]
-        self.match_direction = shape_data["Match Direction"]
         self.group_suffix = shape_data["Group Suffix"]
         self.curve_suffix = shape_data["Curve Suffix"]
+        self.axis = shape_data["Axis"]
+        self.degree = 0
+        self.match_direction = shape_data["Match Direction"]
+        self.points = shape_data["Points"]
         self.scale = shape_data["Scale"]
-        self.create_curve()
+        self._create_curve()
 
-    def create_curve(self):
-        pass
+    def _create_curve(self):
+        curve_obj = cmds.curve(p=self.points,
+                               d=self.degree,
+                               n=self.shape_name + self.curve_suffix)
+        print(f"curve obj name = {curve_obj}")
+        cmds.scale(self.scale, self.scale, self.scale, curve_obj)
+        cmds.FreezeTransformations(curve_obj)
