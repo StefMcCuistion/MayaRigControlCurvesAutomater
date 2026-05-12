@@ -169,15 +169,39 @@ class Window(QtWidgets.QDialog):
 
     def _mk_line_thickness_ui(self):
         line_thickness_layout = QtWidgets.QHBoxLayout()
-        line_thickness_layout.addWidget(QtWidgets.QLabel(
-            "Thick Lines"))
+        line_thickness_label = QtWidgets.QLabel(
+            "Thick Lines")
+        line_thickness_layout.addWidget(line_thickness_label)
         self.thick_lines_checkbox = QtWidgets.QCheckBox()
         self.thick_lines_checkbox.setChecked(False)
         line_thickness_layout.addWidget(self.thick_lines_checkbox)
         self.params_layout.addRow(line_thickness_layout)
 
     def _mk_group_name_ui(self):
-        pass
+        # master grp
+        master_grp_name_layout = QtWidgets.QHBoxLayout()
+        master_grp_name_label = QtWidgets.QLabel(
+            "Master Group Name: ")
+        master_grp_name_layout.addWidget(master_grp_name_label)
+        self.master_grp_name_lineedit = QtWidgets.QLineEdit()
+        self.master_grp_name_lineedit.setText("master")
+        self.master_grp_name_lineedit.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Fixed,)
+        master_grp_name_layout.addWidget(self.master_grp_name_lineedit)
+        self.params_layout.addRow(master_grp_name_layout)
+        # controls grp
+        controls_grp_name_layout = QtWidgets.QHBoxLayout()
+        controls_grp_name_label = QtWidgets.QLabel(
+            "Controls Group Name: ")
+        controls_grp_name_layout.addWidget(controls_grp_name_label)
+        self.controls_grp_name_lineedit = QtWidgets.QLineEdit()
+        self.controls_grp_name_lineedit.setText("controls")
+        self.controls_grp_name_lineedit.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Fixed,)
+        controls_grp_name_layout.addWidget(self.controls_grp_name_lineedit)
+        self.params_layout.addRow(controls_grp_name_layout)
 
     def _mk_delete_all_btn(self):
         pass
