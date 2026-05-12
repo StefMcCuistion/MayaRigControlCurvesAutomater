@@ -34,6 +34,7 @@ class Window(QtWidgets.QDialog):
         self.shape_row_len = 3
         self.total_shape_rows = (len(self.shapes) + 1) // self.shape_row_len
         print("Done")
+        print(f"shapes = {self.shapes}")
 
     def _mk_main_layout(self):
         self.layout = QtWidgets.QVBoxLayout(self)
@@ -71,12 +72,13 @@ class Window(QtWidgets.QDialog):
         for shape_idx in range(len(self.shapes)):
             self._current_btn_name = self.shapes[shape_idx]["Name"]
             btn = QtWidgets.QPushButton(self._current_btn_name)
-            btn.clicked.connect(self._create_shape)
+            btn.clicked.connect(self.create_shape)
             pos = self._get_row_col(shape_idx)
             self.shapes_layout.addWidget(btn, pos[0], pos[1])
         self.layout.addLayout(self.shapes_layout)
 
     def _mk_params_ui(self):
+        self.shape_degree = 0
         self.params_layout = QtWidgets.QFormLayout()
 
     def _get_row_col(self, shape_idx):
@@ -85,15 +87,26 @@ class Window(QtWidgets.QDialog):
         col = (btn_idx) % 3
         return row, col
 
-    def _create_shape(self):
-        print(f"Creating shape")
-        shape = Shape()
-        shape.create()
+    def create_shape(self, name):
+        name = self.sender().text()
+        shape_data = {}
+        print(f"Button creating shape: {name}")
+        for shape in self.shapes:
+            if shape["Name"] == name:
+                shape_data["Name"] = shape["Name"]
+                shape_data["Points"] = shape["Points"]
+                break
+        shape_data["Degree"] = self.shape_degree
+        print(f"shape_data = {shape_data}")
+        new_shape = Shape(shape_data)
+        new_shape.create()
 
-  
+
 class Shape():
-    def __init__(self):
-        pass
+    def __init__(self, shape_data):
+        self.degree = shape_data["Degree"]
+        self.points = shape_data["Points"]
+        self.name = shape_data["Name"]
 
     def create(self):
-        print("create shape")
+        print(f"Class creating shape: {self.name}")
