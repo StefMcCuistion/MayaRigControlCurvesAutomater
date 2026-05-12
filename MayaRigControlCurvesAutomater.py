@@ -33,7 +33,7 @@ class Window(QtWidgets.QDialog):
         self.shapes = self.user_settings["shapes"]
         self.group_suffixes = self.user_settings["group_suffixes"]
         self.curve_suffixes = self.user_settings["curve_suffixes"]
-        self.shape_row_len = 3
+        self.shape_row_len = 2
         self.total_shape_rows = (len(self.shapes)) // self.shape_row_len
         print("Done")
         print(f"shapes = {self.shapes}")
@@ -77,7 +77,7 @@ class Window(QtWidgets.QDialog):
 
     def _mk_shapes_layout(self):
         self.shapes_layout = QtWidgets.QHBoxLayout()
-        self._mk_refresh_btn()
+        # self._mk_refresh_btn()
         # self._mk_v_divider(self.shapes_layout)
         self._mk_shape_btns()
         self.layout.insertLayout(2, self.shapes_layout)
@@ -110,6 +110,10 @@ class Window(QtWidgets.QDialog):
         self._mk_match_direction_ui()
         self._mk_suffix_ui()
         self._mk_shape_scale_ui()
+        self._mk_color_ui()
+        self._mk_line_thickness_ui()
+        self._mk_group_name_ui()
+        self._mk_delete_all_btn()
         self.layout.addLayout(self.params_layout)
 
     def _mk_axis_ui(self):
@@ -123,7 +127,8 @@ class Window(QtWidgets.QDialog):
 
     def _mk_match_direction_ui(self):
         self.match_dir_layout = QtWidgets.QHBoxLayout()
-        self.match_dir_layout.addWidget(QtWidgets.QLabel("Match Joint Orientation:"))
+        self.match_dir_layout.addWidget(QtWidgets.QLabel(
+            "Match Joint Orientation:"))
         self.match_dir_checkbox = QtWidgets.QCheckBox()
         self.match_dir_checkbox.setChecked(True)
         self.match_dir_layout.addWidget(self.match_dir_checkbox)
@@ -159,10 +164,28 @@ class Window(QtWidgets.QDialog):
         self.scale_layout.addWidget(self.scale_spinbox)
         self.params_layout.addRow(self.scale_layout)
 
+    def _mk_color_ui(self):
+        pass
+
+    def _mk_line_thickness_ui(self):
+        line_thickness_layout = QtWidgets.QHBoxLayout()
+        line_thickness_layout.addWidget(QtWidgets.QLabel(
+            "Thick Lines"))
+        self.thick_lines_checkbox = QtWidgets.QCheckBox()
+        self.thick_lines_checkbox.setChecked(False)
+        line_thickness_layout.addWidget(self.thick_lines_checkbox)
+        self.params_layout.addRow(line_thickness_layout)
+
+    def _mk_group_name_ui(self):
+        pass
+
+    def _mk_delete_all_btn(self):
+        pass
+
     def _get_row_col(self, shape_idx):
         btn_idx = shape_idx
-        row = (btn_idx) // 3
-        col = (btn_idx) % 3
+        row = (btn_idx) // self.shape_row_len
+        col = (btn_idx) % self.shape_row_len
         return row, col
 
     def refresh_shapes(self):
