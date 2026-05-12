@@ -98,15 +98,15 @@ class Window(QtWidgets.QDialog):
                 break
         shape_data["Degree"] = self.shape_degree
         print(f"shape_data = {shape_data}")
-        new_shape = Shape(shape_data)
+        new_shape = Control_Curve(shape_data)
         new_shape.create()
 
 
-class Shape():
+class Control_Curve():
     def __init__(self, shape_data):
         self.degree = shape_data["Degree"]
         self.points = shape_data["Points"]
-        self.name = shape_data["Name"]
+        self.shape_name = shape_data["Name"]
 
     def create(self):
-        print(f"Class creating shape: {self.name}")
+        print(f"Class creating shape: {self.shape_name}")
