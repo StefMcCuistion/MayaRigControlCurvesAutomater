@@ -78,8 +78,6 @@ class Window(QtWidgets.QDialog):
 
     def _mk_shapes_layout(self):
         self.shapes_layout = QtWidgets.QHBoxLayout()
-        # self._mk_refresh_btn()
-        # self._mk_v_divider(self.shapes_layout)
         self._mk_shape_btns()
         self.layout.insertLayout(2, self.shapes_layout)
 
@@ -94,13 +92,6 @@ class Window(QtWidgets.QDialog):
             pos = self._get_row_col(shape_idx)
             self.shape_btns_layout.addWidget(btn, pos[0], pos[1])
         self.shapes_layout.addLayout(self.shape_btns_layout)
-
-    def _mk_refresh_btn(self):
-        self.refresh_btn = QtWidgets.QPushButton("Refresh")
-        self.refresh_btn.clicked.connect(self.refresh_shapes)
-        self.refresh_btn.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
-                                       QtWidgets.QSizePolicy.Expanding)
-        self.shapes_layout.addWidget(self.refresh_btn)
 
     def _mk_params_layout(self):
         self.params_layout = QtWidgets.QFormLayout()
@@ -231,12 +222,6 @@ class Window(QtWidgets.QDialog):
         row = (btn_idx) // self.shape_row_len
         col = (btn_idx) % self.shape_row_len
         return row, col
-
-    def refresh_shapes(self):
-        self.import_settings()
-        win = Window()
-        win.show()
-        self.close()
 
     def create_shape(self, name):
         selection = cmds.ls(selection=True)
