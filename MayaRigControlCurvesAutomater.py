@@ -125,6 +125,7 @@ class Window(QtWidgets.QDialog):
         self.match_dir_layout = QtWidgets.QHBoxLayout()
         self.match_dir_layout.addWidget(QtWidgets.QLabel("Match Joint Orientation:"))
         self.match_dir_checkbox = QtWidgets.QCheckBox()
+        self.match_dir_checkbox.setChecked(True)
         self.match_dir_layout.addWidget(self.match_dir_checkbox)
         self.params_layout.addRow(self.match_dir_layout)
 
@@ -183,7 +184,7 @@ class Window(QtWidgets.QDialog):
                 shape_data["Points"] = shape["Points"]
                 break
         shape_data["Axis"] = self.axis_combobox.currentText()
-        shape_data["Match Direction"] = self.match_dir_checkbox.isChecked()
+        shape_data["Match Direction"] = not self.match_dir_checkbox.isChecked()
         shape_data["Group Suffix"] = self.group_suffix_combobox.currentText()
         shape_data["Curve Suffix"] = self.curve_suffix_combobox.currentText()
         shape_data["Scale"] = self.scale_spinbox.value()
@@ -244,6 +245,8 @@ class ControlCurve():
         constraint = cmds.parentConstraint(self.selected_obj,
                                            self.grp, mo=False)[0]
         cmds.delete(constraint)
+        if self.match_direction:
+            cmds.rotate(0, 0, 0, self.grp, a=True)
 
     def _create_grp(self):
         self.grp = cmds.group(n=self.name_stem + self.group_suffix,
