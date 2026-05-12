@@ -120,7 +120,7 @@ class Window(QtWidgets.QDialog):
         self.axis_layout.addWidget(self.axis_label)
         self.axis_layout.addWidget(self.axis_combobox)
         self.params_layout.addRow(self.axis_layout)
-        
+
     def _mk_match_direction_ui(self):
         self.match_dir_layout = QtWidgets.QHBoxLayout()
         self.match_dir_layout.addWidget(QtWidgets.QLabel("Match Joint Orientation:"))
@@ -183,6 +183,10 @@ class Window(QtWidgets.QDialog):
                 shape_data["Points"] = shape["Points"]
                 break
         shape_data["Axis"] = self.axis_combobox.currentText()
+        shape_data["Match Direction"] = self.match_dir_checkbox.isChecked()
+        shape_data["Group Suffix"] = self.group_suffix_combobox.currentText()
+        shape_data["Curve Suffix"] = self.curve_suffix_combobox.currentText()
+        shape_data["Scale"] = self.scale_spinbox.value()
         print(f"shape_data = {shape_data}")
         new_shape = ControlCurve(shape_data)
 
@@ -192,3 +196,11 @@ class ControlCurve():
         self.degree = shape_data["Axis"]
         self.points = shape_data["Points"]
         self.shape_name = shape_data["Name"]
+        self.match_direction = shape_data["Match Direction"]
+        self.group_suffix = shape_data["Group Suffix"]
+        self.curve_suffix = shape_data["Curve Suffix"]
+        self.scale = shape_data["Scale"]
+        self.create_curve()
+
+    def create_curve(self):
+        pass
