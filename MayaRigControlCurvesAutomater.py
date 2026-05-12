@@ -236,9 +236,9 @@ class ControlCurve():
         cmds.FreezeTransformations(self.curve_obj)
 
     def _fix_position_and_orient(self):
-        pass
-        # constraint = cmds.parentConstraint(self.selected_obj,
-        #                                    self.curve_obj, mo=False)
+        constraint = cmds.parentConstraint(self.selected_obj,
+                                           self.grp, mo=False)[0]
+        cmds.delete(constraint)
 
     def _create_grp(self):
         self.grp = cmds.group(n=self.shape_name + self.group_suffix,
