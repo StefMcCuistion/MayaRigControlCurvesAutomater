@@ -18,7 +18,7 @@ class Window(QtWidgets.QDialog):
     def __init__(self):
         super().__init__(parent=get_maya_main_win())
         self.setWindowTitle("Control Curves Automater")
-        self.resize(300, 400)
+        self.resize(300, 600)
 
         self.import_settings()
         self._mk_main_layout()
@@ -41,7 +41,6 @@ class Window(QtWidgets.QDialog):
     def _mk_main_layout(self):
         self.layout = QtWidgets.QVBoxLayout(self)
         self._mk_main_layout_ui()
-        self.layout.addStretch()
 
     def _mk_main_layout_ui(self):
         self._mk_header()
@@ -50,6 +49,8 @@ class Window(QtWidgets.QDialog):
         self._mk_h_splitter(self.layout)
         self._mk_h_divider(self.layout)
         self._mk_params_layout()
+        self.layout.addStretch()
+        self._mk_delete_all_btn()
 
     def _mk_header(self):
         self._header_label = QtWidgets.QLabel("MR Control Curves Automater",
@@ -104,16 +105,15 @@ class Window(QtWidgets.QDialog):
         self.shapes_layout.addWidget(self.refresh_btn)
 
     def _mk_params_layout(self):
-        self.shape_degree = 0
         self.params_layout = QtWidgets.QFormLayout()
+        self._mk_shape_scale_ui()
         self._mk_axis_ui()
         self._mk_match_direction_ui()
-        self._mk_suffix_ui()
-        self._mk_shape_scale_ui()
+        self._mk_constraint_options_ui()
         self._mk_color_ui()
         self._mk_line_thickness_ui()
+        self._mk_suffix_ui()
         self._mk_group_name_ui()
-        self._mk_delete_all_btn()
         self.layout.addLayout(self.params_layout)
 
     def _mk_axis_ui(self):
@@ -177,6 +177,26 @@ class Window(QtWidgets.QDialog):
         line_thickness_layout.addWidget(self.thick_lines_checkbox)
         self.params_layout.addRow(line_thickness_layout)
 
+    def _mk_constraint_options_ui(self):
+        # joint constraints checkbox
+        constraint_checkbox_layout = QtWidgets.QHBoxLayout()
+        constraint_checkbox_label = QtWidgets.QLabel(
+            "Create Joint Constraints")
+        constraint_checkbox_layout.addWidget(constraint_checkbox_label)
+        self.constraint_checkbox = QtWidgets.QCheckBox()
+        self.constraint_checkbox.setChecked(True)
+        constraint_checkbox_layout.addWidget(self.constraint_checkbox)
+        self.params_layout.addRow(constraint_checkbox_layout)
+        # joint orient constraint
+        orient_checkbox_layout = QtWidgets.QHBoxLayout()
+        orient_checkbox_label = QtWidgets.QLabel(
+            "Constrain Joint Orientation")
+        orient_checkbox_layout.addWidget(orient_checkbox_label)
+        self.orient_checkbox = QtWidgets.QCheckBox()
+        self.orient_checkbox.setChecked(True)
+        orient_checkbox_layout.addWidget(self.orient_checkbox)
+        self.params_layout.addRow(orient_checkbox_layout)
+
     def _mk_group_name_ui(self):
         # master grp
         master_grp_name_layout = QtWidgets.QHBoxLayout()
@@ -236,6 +256,8 @@ class Window(QtWidgets.QDialog):
         shape_data["Curve Suffix"] = self.curve_suffix_combobox.currentText()
         shape_data["Scale"] = self.scale_spinbox.value()
         shape_data["Thick Lines"] = self.thick_lines_checkbox.isChecked()
+        shape_data["Master Grp Name"] = self.master_grp_name_lineedit.text()
+        shape_data["Controls Grp Name"] = self.controls_grp_name_lineedit.text()
         print(f"shape_data = {shape_data}")
         control_curve = ControlCurve(selection, shape_data)
         control_curve._build()
@@ -253,6 +275,8 @@ class ControlCurve():
         self.points = shape_data["Points"]
         self.scale = shape_data["Scale"]
         self.thick_lines = shape_data["Thick Lines"]
+        self.master_grp_name = shape_data["Master Grp Name"]
+        self.controls_grp_name = shape_data["Controls Grp Name"]
 
     def _build(self):
         self.parent = self._get_controls_grp()
@@ -314,9 +338,9 @@ class ControlCurve():
         cmds.parent(self.curve_obj, self.grp)
 
     def _get_controls_grp(self):
-        controls_grp = cmds.ls("controls")
+        controls_grp = cmds.ls(self.controls_grp_name)
         if not controls_grp:
-            controls_grp = cmds.group(n="controls", empty=True)
+            controls_grp = cmds.group(n=self.controls_grp_name, empty=True)
         return controls_grp
 
     def _parent(self):
@@ -326,9 +350,9 @@ class ControlCurve():
         cmds.parentConstraint(self.curve_obj, self.selected_obj, mo=True)
 
     def _place_under_master_grp(self):
-        master_grp = cmds.ls("master")
+        master_grp = cmds.ls(self.master_grp_name)
         if not master_grp:
-            master_grp = cmds.group(n="master", empty=True)
+            master_grp = cmds.group(n=self.master_grp_name, empty=True)
         controls_grp = self._get_controls_grp()
         print(f"controls_grp = {controls_grp}")
         cmds.parent(controls_grp, master_grp)
