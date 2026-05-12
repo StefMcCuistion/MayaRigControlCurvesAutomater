@@ -139,7 +139,7 @@ class Window(QtWidgets.QDialog):
         self.params_layout.addRow(self.group_suffix_layout)
         # Control Curve Suffixes
         self.curve_suffix_layout = QtWidgets.QHBoxLayout()
-        self.curve_suffix_label = QtWidgets.QLabel("Control Curve Suffix:")
+        self.curve_suffix_label = QtWidgets.QLabel("NURBS Curve Suffix:")
         self.curve_suffix_combobox = QtWidgets.QComboBox()
         self.curve_suffix_combobox.addItems(self.curve_suffixes)
         self.curve_suffix_layout.addWidget(self.curve_suffix_label)
