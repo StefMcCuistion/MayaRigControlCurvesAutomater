@@ -18,7 +18,7 @@ class Window(QtWidgets.QDialog):
     def __init__(self):
         super().__init__(parent=get_maya_main_win())
         self.setWindowTitle("Control Curves Automater")
-        self.resize(300, 600)
+        self.resize(300, 450)
 
         self.import_settings()
         self._mk_main_layout()
@@ -27,12 +27,12 @@ class Window(QtWidgets.QDialog):
         print("Importing settings...")
         with open(os.path.join(
                                os.path.dirname(__file__),
-                               "MRCCA_userSettings.json"),
+                               "MRCCA_presets.json"),
                   "r") as f:
-            self.user_settings = json.load(f)
-        self.shapes = self.user_settings["shapes"]
-        self.group_suffixes = self.user_settings["group_suffixes"]
-        self.curve_suffixes = self.user_settings["curve_suffixes"]
+            self.presets = json.load(f)
+        self.shapes = self.presets["shapes"]
+        self.group_suffixes = self.presets["group_suffixes"]
+        self.curve_suffixes = self.presets["curve_suffixes"]
         self.shape_row_len = 2
         self.total_shape_rows = (len(self.shapes)) // self.shape_row_len
         print("Done")
@@ -46,10 +46,10 @@ class Window(QtWidgets.QDialog):
         self._mk_header()
         self._mk_h_divider(self.layout)
         self._mk_shapes_layout()
-        self._mk_h_splitter(self.layout)
         self._mk_h_divider(self.layout)
         self._mk_params_layout()
         self.layout.addStretch()
+        self._mk_color_all_btn()
         self._mk_delete_controls_grp_btn()
 
     def _mk_header(self):
@@ -163,7 +163,6 @@ class Window(QtWidgets.QDialog):
         self.params_layout.addRow(line_thickness_layout)
 
     def _mk_constraint_options_ui(self):
-        # joint constraints checkbox
         constraint_checkbox_layout = QtWidgets.QHBoxLayout()
         constraint_checkbox_label = QtWidgets.QLabel(
             "Create Joint Constraints")
@@ -172,15 +171,6 @@ class Window(QtWidgets.QDialog):
         self.constraint_checkbox.setChecked(True)
         constraint_checkbox_layout.addWidget(self.constraint_checkbox)
         self.params_layout.addRow(constraint_checkbox_layout)
-        # joint orient constraint
-        orient_checkbox_layout = QtWidgets.QHBoxLayout()
-        orient_checkbox_label = QtWidgets.QLabel(
-            "Constrain Joint Orientation")
-        orient_checkbox_layout.addWidget(orient_checkbox_label)
-        self.orient_checkbox = QtWidgets.QCheckBox()
-        self.orient_checkbox.setChecked(True)
-        orient_checkbox_layout.addWidget(self.orient_checkbox)
-        self.params_layout.addRow(orient_checkbox_layout)
 
     def _mk_group_name_ui(self):
         # master grp
@@ -243,6 +233,7 @@ class Window(QtWidgets.QDialog):
         shape_data["Thick Lines"] = self.thick_lines_checkbox.isChecked()
         shape_data["Master Grp Name"] = self.master_grp_name_lineedit.text()
         shape_data["Controls Grp Name"] = self.controls_grp_name_lineedit.text()
+        shape_data["Create Constraints"] = self.constraint_checkbox.isChecked()
         print(f"shape_data = {shape_data}")
         control_curve = ControlCurve(selection, shape_data)
         control_curve._build()
@@ -262,6 +253,7 @@ class ControlCurve():
         self.thick_lines = shape_data["Thick Lines"]
         self.master_grp_name = shape_data["Master Grp Name"]
         self.controls_grp_name = shape_data["Controls Grp Name"]
+        self.joint_constraints_enabled = shape_data["Create Constraints"]
 
     def _build(self):
         self.parent = self._get_controls_grp()
@@ -332,7 +324,8 @@ class ControlCurve():
         cmds.parent(self.grp, self.parent)
 
     def _create_joint_constraint(self):
-        cmds.parentConstraint(self.curve_obj, self.selected_obj, mo=True)
+        if self.joint_constraints_enabled:
+            cmds.parentConstraint(self.curve_obj, self.selected_obj, mo=True)
 
     def _place_under_master_grp(self):
         master_grp = cmds.ls(self.master_grp_name)
