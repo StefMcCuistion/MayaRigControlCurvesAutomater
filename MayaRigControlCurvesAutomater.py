@@ -48,7 +48,7 @@ class Window(QtWidgets.QDialog):
         self._mk_h_divider(self.layout)
         self._mk_params_ui()
         self.layout.addStretch()
-        # self._mk_warning_label("")
+
 
     def _mk_header(self):
         self._header_label = QtWidgets.QLabel("MR Control Curves Automater",
@@ -114,33 +114,14 @@ class Window(QtWidgets.QDialog):
 
     def refresh_shapes(self):
         self.import_shape_library()
-        self.warning_label.hide()
         self.shapes_layout.deleteLater()
         self._mk_shapes_ui()
-
-    def _warning(self, msg):
-        cmds.warning(msg)
-        # self.warning_label.setText(msg)
-        # self.warning_label.show()
-
-    def _mk_warning_label(self, text):
-        self.warning_label = QtWidgets.QLabel(text, self)
-        self.warning_label.setStyleSheet(
-                            "font-size: 20px; "
-                            "font-weight: bold; "
-                            "color: rgb(255, 238, 162);"
-                            )
-        self.warning_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.warning_label.setWordWrap(True)
-        self.layout.addWidget(self.warning_label)
-        self.warning_label.hide()
 
     def create_shape(self, name):
         selection = cmds.ls(selection=True)
         if not selection:
-            self._warning("Please select one or more joints first.")
+            cmds.warning("Please select one or more joints first.")
             return
-        self.warning_label.hide()
         name = self.sender().text()
         shape_data = {}
         for shape in self.shapes:
