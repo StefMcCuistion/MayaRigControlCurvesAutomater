@@ -188,7 +188,8 @@ class Window(QtWidgets.QDialog):
         shape_data["Curve Suffix"] = self.curve_suffix_combobox.currentText()
         shape_data["Scale"] = self.scale_spinbox.value()
         print(f"shape_data = {shape_data}")
-        new_shape = ControlCurve(shape_data)
+        control_curve = ControlCurve(shape_data)
+        control_curve._build()
 
 
 class ControlCurve():
@@ -197,16 +198,35 @@ class ControlCurve():
         self.group_suffix = shape_data["Group Suffix"]
         self.curve_suffix = shape_data["Curve Suffix"]
         self.axis = shape_data["Axis"]
-        self.degree = 0
+        self.degree = 1
         self.match_direction = shape_data["Match Direction"]
         self.points = shape_data["Points"]
         self.scale = shape_data["Scale"]
-        self._create_curve()
+
+    def _build(self):
+
+        self.curve_obj = self._create_curve()
+        self._fix_scale()
+        self._fix_axis()
 
     def _create_curve(self):
-        curve_obj = cmds.curve(p=self.points,
-                               d=self.degree,
-                               n=self.shape_name + self.curve_suffix)
-        print(f"curve obj name = {curve_obj}")
-        cmds.scale(self.scale, self.scale, self.scale, curve_obj)
+        if self.points == 0:
+            curve_obj = cmds.circle(n=self.shape_name + self.curve_suffix)
+            cmds.rotate(0, 90, 90, curve_obj)
+        else:
+            curve_obj = cmds.curve(p=self.points,
+                                   d=self.degree,
+                                   n=self.shape_name + self.curve_suffix)
         cmds.FreezeTransformations(curve_obj)
+        return curve_obj
+
+    def _fix_scale(self):
+        cmds.scale(self.scale, self.scale, self.scale, self.curve_obj)
+        cmds.FreezeTransformations(self.curve_obj)
+
+    def _fix_axis(self):
+        if self.axis == "X":
+            cmds.rotate(0, 0, 90, self.curve_obj, a=True)
+        elif self.axis == "Z":
+            cmds.rotate(90, 0, 0, self.curve_obj, a=True)
+        cmds.FreezeTransformations(self.curve_obj)
