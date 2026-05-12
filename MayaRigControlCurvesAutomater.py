@@ -47,6 +47,7 @@ class Window(QtWidgets.QDialog):
         self._mk_h_divider()
         self._mk_params_ui()
         self.layout.addStretch()
+        self._mk_warning_label("")
 
     def _mk_header(self):
         self._header_label = QtWidgets.QLabel("MR Control Curves Automater",
@@ -65,7 +66,7 @@ class Window(QtWidgets.QDialog):
     def _mk_shapes_ui(self):
         self.shapes_layout = QtWidgets.QGridLayout()
         self.refresh_btn = QtWidgets.QPushButton("REFRESH")
-        self.refresh_btn.clicked.connect(self.import_shape_library)
+        self.refresh_btn.clicked.connect(self.refresh_shapes)
         self.refresh_btn.setStyleSheet("background-color: cyan, "
                                        "font-weight: bold;")
         self.shapes_layout.addWidget(self.refresh_btn, 0, 0)
@@ -75,7 +76,7 @@ class Window(QtWidgets.QDialog):
             btn.clicked.connect(self.create_shape)
             pos = self._get_row_col(shape_idx)
             self.shapes_layout.addWidget(btn, pos[0], pos[1])
-        self.layout.addLayout(self.shapes_layout)
+        self.layout.insertLayout(2, self.shapes_layout)
 
     def _mk_params_ui(self):
         self.shape_degree = 0
@@ -87,7 +88,35 @@ class Window(QtWidgets.QDialog):
         col = (btn_idx) % 3
         return row, col
 
+    def refresh_shapes(self):
+        self.import_shape_library()
+        self.warning_label.hide()
+        self.shapes_layout.deleteLater()
+        self._mk_shapes_ui()
+
+    def _warning(self, msg):
+        cmds.warning(msg)
+        self.warning_label.setText(msg)
+        self.warning_label.show()
+
+    def _mk_warning_label(self, text):
+        self.warning_label = QtWidgets.QLabel(text, self)
+        self.warning_label.setStyleSheet(
+                            "font-size: 20px; "
+                            "font-weight: bold; "
+                            "color: rgb(255, 238, 162);"
+                            )
+        self.warning_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.warning_label.setWordWrap(True)
+        self.layout.addWidget(self.warning_label)
+        self.warning_label.hide()
+
     def create_shape(self, name):
+        selection = cmds.ls(selection=True)
+        if not selection:
+            self._warning("Please select one or more joints first.")
+            return
+        self.warning_label.hide()
         name = self.sender().text()
         shape_data = {}
         for shape in self.shapes:
@@ -98,7 +127,6 @@ class Window(QtWidgets.QDialog):
         shape_data["Degree"] = self.shape_degree
         print(f"shape_data = {shape_data}")
         new_shape = Control_Curve(shape_data)
-        new_shape.create()
 
 
 class Control_Curve():
@@ -106,6 +134,3 @@ class Control_Curve():
         self.degree = shape_data["Degree"]
         self.points = shape_data["Points"]
         self.shape_name = shape_data["Name"]
-
-    def create(self):
-        print(f"Creating: {self.shape_name}")
