@@ -1,3 +1,6 @@
+import json
+import os
+
 import maya.cmds as cmds
 import maya.OpenMayaUI as omui
 from PySide6 import QtWidgets, QtCore
@@ -22,7 +25,13 @@ class Window(QtWidgets.QDialog):
 
     def import_shape_library(self):
         print("Importing shape library...")
-        self.shapes = ["Circle", "Square", "Cube", "Star"]
+        # import shape library from json file
+        with open(os.path.join(
+                               os.path.dirname(__file__),
+                               "shape_library.json"),
+                  "r") as f:
+            self.shape_library = json.load(f)
+        self.shapes = self.shape_library["shapes"]
         self.shape_row_len = 3
         self.total_shape_rows = (len(self.shapes) + 1) // self.shape_row_len
         print("Done")
@@ -61,7 +70,7 @@ class Window(QtWidgets.QDialog):
                                        "font-weight: bold;")
         self.shapes_layout.addWidget(self.refresh_btn, 0, 0)
         for shape_idx in range(len(self.shapes)):
-            self._current_btn_name = self.shapes[shape_idx]
+            self._current_btn_name = self.shapes[shape_idx]["Name"]
             btn = QtWidgets.QPushButton(self._current_btn_name)
             btn.clicked.connect(self._create_shape)
             pos = self._get_row_col(shape_idx)
@@ -71,13 +80,12 @@ class Window(QtWidgets.QDialog):
     def _mk_params_ui(self):
         self.params_layout = QtWidgets.QFormLayout()
 
-
     def _get_row_col(self, shape_idx):
         btn_idx = shape_idx + 1
         row = (btn_idx) // 3
         col = (btn_idx) % 3
         return row, col
 
-    def _create_shape(self, name):
+    def _create_shape(self):
         name = "(default_shape_name)"
         print(f"Creating {name} shape")
