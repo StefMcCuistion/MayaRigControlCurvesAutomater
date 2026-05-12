@@ -222,6 +222,7 @@ class ControlCurve():
             self._parent()
             self._create_joint_constraint()
             self.parent = self.curve_obj
+        self._place_under_master_grp()
 
     def _create_curve(self):
         if self.points == 0:
@@ -268,3 +269,11 @@ class ControlCurve():
 
     def _create_joint_constraint(self):
         cmds.parentConstraint(self.curve_obj, self.selected_obj, mo=True)
+
+    def _place_under_master_grp(self):
+        master_grp = cmds.ls("master")
+        if not master_grp:
+            master_grp = cmds.group(n="master", empty=True)
+        controls_grp = self._get_controls_grp()
+        print(f"controls_grp = {controls_grp}")
+        cmds.parent(controls_grp, master_grp)
