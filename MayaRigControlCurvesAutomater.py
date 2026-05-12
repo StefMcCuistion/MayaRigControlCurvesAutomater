@@ -49,7 +49,6 @@ class Window(QtWidgets.QDialog):
         self._mk_h_divider(self.layout)
         self._mk_params_layout()
         self.layout.addStretch()
-        self._mk_color_all_btn()
         self._mk_delete_controls_grp_btn()
 
     def _mk_header(self):
